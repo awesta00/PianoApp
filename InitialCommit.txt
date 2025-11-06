@@ -1,0 +1,13 @@
+This code make a graphical piano keyboard using JFrame
+I plugged a USB-C (into keyboard) into USB (into laptop) to run This
+I also took hardwired the name of the device into the code under the name 
+    it was registered as on my computer
+
+When you play a note on the IRL piano, you get instantaneous visual feedback on the
+    graphical keyboard that shows exactly what you played. It gets colored in when 
+    pressed, and back to default color (black/white) when released.
+
+If you want audio to be played on your computer, uncomment everything that says to
+However it's not implemented due to latency I think with the Java synth software
+    , but I have a better idea for future (and IDK how to fix it). But you already
+    get perfect instant audio feedback from the piano so it's better without anyway.
