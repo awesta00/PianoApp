@@ -1,0 +1,87 @@
+Recommended notes:
+
+
+
+
+
+
+- Select a key
+Notes below middle C are orange; above are green
+Highlight every note on that staff within an octave from the pressed note 
+    (if more than 1 note is already pressed, highlight the next 3 adjacent keys that work well)
+
+every key must have a note number (to know how far away the other keys are) and attributes assigned to its note
+     (A, E, F# & G♭) to know if it works on the key signature. Stored in a hash map
+    
+if (key suggestions == on)
+if (key pressed)
+    id = key.get(num)
+
+    for (every closeKey where closeKey.get(id) <= key.get(id)+- 8)
+        closeKey.highlight();
+
+
+highlight() {
+    if (key.get(id) >= 60) {
+        color.set(green)
+    } else {
+        color.set(orange)
+    }
+}
+
+
+
+Key signatures to play in (star = most popular)
+C major / A minor (all white) ⚝
+G major / E minor (F#) ⚝
+D major / B minor (F#, C#) ⚝
+A major / F# minor (F#, C#, G#) ⚝
+E major / C# minor (F#, C#, G#, D#)     
+B major / G# minor (F#, C#, G#, D#, A#)
+F# major / D# minor (F#, C#, G#, D#, A#, E#)
+C# major / A# minor (F#, C#, G#, D#, A#, E#, B#)
+
+F major / D minor (B♭)
+B♭ major / G minor (B♭, E♭)
+E♭ major / C minor (B♭, E♭, A♭)
+A♭ major / F minor (B♭, E♭, A♭, D♭)
+D♭ major / B♭ minor (B♭, E♭, A♭, D♭, G♭) ⚝
+G♭ major / E♭ minor (B♭, E♭, A♭, D♭, G♭, C♭)
+C♭ major / A♭ minor (B♭, E♭, A♭, D♭, G♭, C♭, F♭)
+
+
+
+
+
+
+
+
+Record button:
+Phase 1
+1. jpanel start recording button
+2. turns into stop recording button
+
+Phase 2
+record the internal mic
+write the data to a mp3 file and save it under the recording folder
+
+
+    /*
+     * Controls the record button settings
+     */
+    // public void setRecord(JButton recordButton) {
+    //     if (!recordOn) {
+    //         recordButton.setText("Recording...");
+    //         recordButton.setBackground(new Color (0, 200, 0));
+    //         recordOn = true; // start recording
+
+    //         // start recording using internal mic?
+    //     } else {
+    //         recordButton.setText("Record");
+    //         recordButton.setBackground(new Color (180, 180, 180));
+    //         recordOn = false; // reset the record button
+
+    //         //stop the recording
+    //         // call a save method to write a file
+    //     }
+    // }

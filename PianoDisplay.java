@@ -15,21 +15,26 @@ public class PianoDisplay extends JPanel{
     private final Map<Integer, Boolean> keyPressed = new HashMap<>();
     private static final int FIRST_KEY = 21;    // A0 (where piano starts; # < 21 DNE on this piano)
     private static final int NUM_KEYS = 88;     // full piano
+    private GuiFunctions gui;
+    // private KeySuggestions keySuggest;
 
 
-    public PianoDisplay() {
+    public PianoDisplay(GuiFunctions gui) {
         setPreferredSize(new Dimension(NUM_KEYS * 25, 200)); // setting size of keys
-        for (int i = 0; i < NUM_KEYS; i++) keyPressed.put(FIRST_KEY + i, false);
+        for (int i = 0; i < NUM_KEYS; i++) {
+            keyPressed.put(FIRST_KEY + i, false);
+        }
+        this.gui = gui;
     }
 
     /*
      * Gets MIDI data from keyboard
      * The MIDISoundPlayer is not used due to noticeable audible latency
-     * @param device is the keyboard. Optional is MidiSoundPlayer to get audio on computer as well 
+     * @param device is the keyboard.
      */
-    public void getData(MidiDevice device) { //, MidiSoundPlayer player) { ADD parameter to constructor for sound player
+    public void getData(MidiDevice device) {
         try {
-         Transmitter transmitter = device.getTransmitter();
+            Transmitter transmitter = device.getTransmitter();
                     transmitter.setReceiver(new Receiver() {
                         @Override
                         public void send(MidiMessage message, long timeStamp) {
@@ -37,17 +42,39 @@ public class PianoDisplay extends JPanel{
                                 int cmd = sm.getCommand(); // Note on/off (144 on, 128 off???)
                                 int pitch = sm.getData1(); // MIDI note number (0-127); (21-108 inclusive are actual keys)
                                 int velocity = sm.getData2(); // How hard the note was pressed (0-127)
+                                // System.out.println(suggestion);
 
+                                // Adds suggestions
                                 if (cmd == ShortMessage.NOTE_ON && velocity > 0) {
-                                    keyPressed.put(pitch, true);
-                                    // player.playNote(pitch, velocity);  // sound player component
-                                    repaint();
+                                    boolean suggestion = gui.getSuggestion();
 
+                                    keyPressed.put(pitch, true);
+                                    
+                                    if (suggestion == true) {
+                                        
+                                        int suggested = pitch - 10;
+                                        for (int i = pitch - 10; i <= pitch + 10; i++) {
+                                            keyPressed.put(suggested, true);
+                                            suggested++;
+                                        }
+
+                                        // keySuggest.detectKeySig();
+                                    }
+
+                                    repaint();
+                                    // Removes suggestions
                                 } else if (cmd == ShortMessage.NOTE_OFF ||
                                            (cmd == ShortMessage.NOTE_ON && velocity == 0)) {
-                                            
+                                    boolean suggestion = gui.getSuggestion();
+
                                     keyPressed.put(pitch, false);
-                                    // player.stopNote(pitch);  // sound player component
+                                    if (suggestion == true) {
+                                        int suggested = pitch - 10;
+                                            for (int i = pitch - 10; i <= pitch + 10; i++) {
+                                            keyPressed.put(suggested, false);
+                                            suggested++;
+                                        }
+                                    }
                                     repaint();
                                 }
                             }
@@ -64,7 +91,6 @@ public class PianoDisplay extends JPanel{
 
     /*
      * Paints the graphic for the piano. Is updated everytime a key is pressed/released
-     * Used ChatGPT to calculate positions and create the graphics
      * @param g, part of override; do not remove.
      */
     @Override
@@ -78,11 +104,12 @@ public class PianoDisplay extends JPanel{
         int blackKeyHeight = (int) (whiteKeyHeight * 0.6);
         int yOffset = panelHeight - whiteKeyHeight; // anchor piano to bottom
 
+
         // Create positions of white keys
         int x = 0;
         Map<Integer, Integer> keyX = new HashMap<>();
         for (int i = 0; i < NUM_KEYS; i++) {
-            int midi = FIRST_KEY + i;
+            int midi = FIRST_KEY + i; // will represent the ID
             if (!isBlackKey(midi)) {
                 keyX.put(midi, x);
                 x += whiteKeyWidth;
@@ -114,6 +141,7 @@ public class PianoDisplay extends JPanel{
         }
     }
 
+    // math using mod to find black keys
     private boolean isBlackKey(int midiNote) {
         int pitchClass = midiNote % 12;
         return switch (pitchClass) {
